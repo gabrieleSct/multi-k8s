@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: web
+  ports:
+    #per raggiungere la porta 3000 bisogna chiamare la porta 3000 del servizio
+    #se ci sono ragioni specifiche si possono anche non far coincidere
+    - port: 3000
+      targetPort: 3000 

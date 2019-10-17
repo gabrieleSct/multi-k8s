@@ -1,0 +1,11 @@
+#usato per postgres-deployment
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-persistent-volume-claim
+spec:
+  accessModes:
+    - ReadWriteOnce #può essere usato da un solo nodo per volta
+  resources:
+    requests:
+      storage: 2Gi
