@@ -6,8 +6,8 @@ docker build -t gabrielescotti/multi-worker:latest -t gabrielescotti/multi-worke
 #push delle immagini su docker hub, ci siamo già loggati in precedenza (vedi file .travis.yml)
 docker push gabrielescotti/multi-client:latest
 docker push gabrielescotti/multi-client:$SHA
-docker push gabrielescotti/nulti-server:latest
-docker push gabrielescotti/nulti-server:$SHA
+docker push gabrielescotti/multi-server:latest
+docker push gabrielescotti/multi-server:$SHA
 docker push gabrielescotti/multi-worker:latest
 docker push gabrielescotti/multi-worker:$SHA
 #applichiamo tutte le configurazioni di kubernetes presenti nella cartella k8s
