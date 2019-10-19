@@ -1,8 +1,17 @@
 sudo: required
 services:
   - docker
+env:
+  global:
+    #creo l'identificativo di questa build e lo salvo come variabile d'ambiente (utilizzato in deploy.sh)
+    - SHA=$(git rev-parse HEAD)
+    #disabilito l'interazione durante l'esecuzione dei comandi dato che il processo deve essere esguito in automatico
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
   #setup
+  #decrypt della file json contenente le info per il login su gcloud creata con travis encrypt
+  #il file viene utilizzato dal comando successivo (--key-file service-account.json)
+  - openssl aes-256-cbc -K $encrypted_0c35eebf403c_key -iv $encrypted_0c35eebf403c_iv -in service-account.json.enc -out service-account.json -d
   #installa google cloud sdk
   - culr https://sdk.cloud.google.com | bash > /dev/null;
   - source $HOME/google-cloud-sdk/path.bash.inc
@@ -11,3 +20,22 @@ before_install:
   #autorizzazioni
   #credenziali per l'accesso al google cloud account (create da un Service account su gcloud)
   - gcloud auth activate-service-account --key-file service-account.json
+  #settaggio del progetto, zona di gcloud e cluster
+  - gcloud config set project milti-k8s-256407
+  - gcloud config set zone europe-west1-b
+  - gcloud container clusters get-credentials multi-cluster
+  #login a docker (possiamo farlo perchè abbiamo specificato nella lista di servizi necessari docker)
+  #le due variabili DOCKER_PASSWORD e DOCKER_USERNAME vanno settate come variabili d'ambiente nel progetto di Travis CI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  #build dell'immagine docker per i test (va utilizzato il file docker dev che contiene le dipendenze per far girare i test)
+  - docker build -t gabrielescotti/react-test -f ./client/Dockerfile.dev ./client
+script:
+  #esegui i test
+  - docker run -e CI=true gabrielescotti/react-test npm run test -- --coverage
+
+deploy:
+  #scriviamo noi lo script di deploy, diciamo a travis di eseguirlo
+  provider: script 
+  script: bash ./deploy.sh #questo script contiene gli step per il deploy
+  on:
+    brach: master
