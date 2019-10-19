@@ -22,7 +22,7 @@ before_install:
   - gcloud auth activate-service-account --key-file service-account.json
   #settaggio del progetto, zona di gcloud e cluster
   - gcloud config set project milti-k8s-256407
-  - gcloud config set zone europe-west1-b
+  - gcloud config set compute/zone europe-west1-b
   - gcloud container clusters get-credentials multi-cluster
   #login a docker (possiamo farlo perchè abbiamo specificato nella lista di servizi necessari docker)
   #le due variabili DOCKER_PASSWORD e DOCKER_USERNAME vanno settate come variabili d'ambiente nel progetto di Travis CI
